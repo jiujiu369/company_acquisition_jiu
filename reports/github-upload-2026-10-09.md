@@ -21,7 +21,11 @@
 
 本轮全量测试：264 passed，1 条既有 Starlette/AnyIO 弃用提示，100.50 秒。测试原始输出：`github-upload-pytest-2026-10-09.txt`。两个 JavaScript 文件语法检查退出码均为 0。提交前检查暂存清单、排除路径和凭据扫描。`git diff --cached --check` 曾提示原有代码的空白格式问题；为保持现有源码，不作无关格式修改。
 
-发布步骤使用 `git commit` 与 `git push -u origin main`；随后比较本地 HEAD 与 `git ls-remote origin refs/heads/main`，确认远端内容，并核对工作区状态。实际发布结果将在成功推送后补记。
+发布步骤使用 `git commit` 与 `git push -u origin main`；随后比较本地 HEAD 与 `git ls-remote origin refs/heads/main`，确认远端内容，并核对工作区状态。
+
+实际发布结果：首次提交 `9f4d6c8c8d3280acc8b98ba8bbab139fb3914c6e` 已成功推送至 `origin/main`，并设置本地分支跟踪关系。提交包含 122 个文件，其中 `reports/` 下 33 个记录文件。推送后查询远端主分支得到相同完整提交号，工作区为 clean。此次复核未改变业务代码。
+
+本段成功结果通过后续文档提交补记；该文档提交也推送到同一主分支。首次代码导入的完整提交号如上，最新主分支以 Git 历史为准。
 
 ## 云端接续
 
