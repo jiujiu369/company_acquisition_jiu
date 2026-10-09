@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block page %}collection{% endblock %}
+{% block title %}商品采集 · 商品采集下载{% endblock %}
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">COLLECT / 01</p><h1>商品采集</h1><p>添加淘宝、天猫商品或店铺链接，导出 Excel，可选择同时下载原图。</p></div><a class="button subtle" href="/progress"><svg class="icon"><use href="#i-list"/></svg>查看采集进度</a></header>
+<div class="collection-layout">
+  <section class="card form-card" aria-labelledby="new-task-heading"><div class="card-heading"><span class="step-mark">01</span><div><h2 id="new-task-heading">添加采集链接</h2><p class="muted">每行一个链接，支持批量提交。</p></div></div>
+    <form id="collection-form" novalidate><label for="source-urls">商品或店铺链接 <span class="required">必填</span></label>
+      <textarea id="source-urls" rows="9" required aria-describedby="url-help url-error" placeholder="https://item.taobao.com/item.htm?id=…&#10;https://detail.tmall.com/item.htm?id=…&#10;https://shop123.taobao.com/category.htm"></textarea>
+      <p id="url-error" class="field-error" role="alert" hidden></p><div class="input-meta"><span id="url-help">支持淘宝、天猫的商品详情及店铺页面；每次最多 50 个链接。</span><span id="url-count">0 / 50</span></div>
+      <label for="save-directory">保存到 <span class="required">必填</span></label>
+      <div class="directory-row"><input id="save-directory" type="text" readonly placeholder="点击“选择文件夹”选定保存位置" aria-describedby="directory-status"><button id="choose-directory" class="button" type="button">选择文件夹</button><button id="check-directory" class="button" type="button">检查目录</button></div>
+      <p id="directory-status" class="feedback" role="status" aria-live="polite">点击“选择文件夹”打开 Windows 选择窗口，可选已有文件夹或新建文件夹。每批在选定位置建立独立资料文件夹。</p>
+      <label for="collection-mode">资料读取方式</label><select id="collection-mode"><option value="reuse">复用已有资料，显示原资料时间</option><option value="refresh" selected>重新读取最新资料，保留人工修改与历史版本</option></select>
+      <label for="collection-content">采集内容</label><select id="collection-content" aria-describedby="content-help"><option value="excel_only" selected>仅 Excel 表格（含一张商品主图）</option><option value="with_images">Excel 表格＋全部原图</option></select>
+      <p id="content-help" class="muted">每件商品独立 Excel，SKU 编号使用型号文字，主图嵌入表格。仅 Excel 模式只采集一张主图，跳过详情图及其余图片；未知变量留空。</p>
+      <p class="muted">每件商品独立取得信息后保存，再处理下一件。渲染请求会消耗更多额度；复用资料时不重新请求。</p>
+      <div class="form-rule"><svg class="icon"><use href="#i-check"/></svg><span>自动保存完整商品资料包；相同商品保存到新目录也会生成完整资料，已校验原图优先复用。</span></div>
+      <div class="form-actions"><button id="submit-collection" class="button primary" type="submit"><svg class="icon"><use href="#i-plus"/></svg><span>开始采集</span></button><span id="collection-message" class="feedback" role="status" aria-live="polite"></span></div>
+    </form></section>
+  <aside class="side-stack"><section class="card service-card" aria-labelledby="network-heading"><div class="card-heading"><span class="service-mark"><svg class="icon"><use href="#i-refresh"/></svg></span><div><h2 id="network-heading">ScraperAPI 连接</h2><p class="muted">用于获取公开页面内容</p></div></div><div id="network-state" class="connection-state" role="status" aria-live="polite"><svg class="icon"><use href="#i-clock"/></svg><span>未测试</span></div><p id="network-status" class="muted">正在读取服务配置…</p><button id="test-network" class="button" type="button"><svg class="icon"><use href="#i-refresh"/></svg><span>测试连接</span></button></section>
+    <section class="card guide-card"><h2>采集流程</h2><ol><li><strong>添加链接</strong><span>输入商品或店铺地址，提交采集任务。</span></li><li><strong>查看进度</strong><span>按商品查看当前步骤、失败原因并管理任务。</span></li><li><strong>获取原图</strong><span>在已保存商品中查看资料和导出原图 ZIP。</span></li></ol><p class="muted">遇到登录或验证时，任务会暂停并说明原因；请在保留的浏览器窗口完成后继续。</p></section></aside>
+</div>
+{% endblock %}

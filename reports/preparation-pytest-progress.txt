@@ -1,0 +1,1256 @@
+......................F...FFF.F..........F...F.............F............ [ 53%]
+.........................................F..........FF.F......           [100%]
+================================== FAILURES ===================================
+_____ test_delete_shop_keeps_shared_child_until_last_consumer_is_deleted ______
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_delete_shop_keeps_shared_0')
+
+    def test_delete_shop_keeps_shared_child_until_last_consumer_is_deleted(tmp_path):
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            attach(app)
+            ids = client.post('/api/collection/jobs/batch', json={'urls':[SHOP, SHOP.replace('shop123', 'shop456')]}).json()['task_ids']
+            app.state.worker.run_once()
+            app.state.worker.run_once()
+            with app.state.session_factory.begin() as session:
+                child = session.scalar(select(CollectionJob).where(CollectionJob.kind == 'product'))
+                cid = child.task_id
+                child.result_data = {**child.result_data, 'manual_browser_owner':True}
+            assert client.delete(f'/api/collection/jobs/{ids[0]}').status_code == 200
+            with app.state.session_factory() as session:
+                assert session.get(Task, cid).status == 'PENDING'
+>           assert client.get('/api/collection/jobs').json()['total'] == 1
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_delete.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\starlette\testclient.py:473: in get
+    return super().get(
+.venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+.venv\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+.venv\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv\Lib\site-packages\anyio\from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:396: in __get_result
+    raise self._exception
+.venv\Lib\site-packages\anyio\from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+.venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:1281: in handle
+    await super().handle(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+.venv\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:194: in list_jobs
+    return {"items":[job_view(session,j,t,data_dir) for j,t in rows[offset:offset+limit]], "total":len(rows), "offset":offset, "limit":limit}
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:66: in job_view
+    "result": public_result(shop_result(session, job, data_dir) if job.kind == "shop" else job.result_data),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\collection_service.py:308: in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000002AC70AA4610>
+
+>   required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+
+app\collection_service.py:308: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 1f0831d8-84ac-4a0d-8674-4cad8d9d03e5 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+ERROR    app.tasks:tasks.py:131 Task 6d8b980e-b632-4a44-ab7f-3ef52da0a037 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+________ test_shared_child_retry_does_not_requeue_deleted_partial_shop ________
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_shared_child_retry_does_n0')
+
+    def test_shared_child_retry_does_not_requeue_deleted_partial_shop(tmp_path):
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+>           ids, cid = shared_partial(client, app)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_delete.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <starlette.testclient.TestClient object at 0x000002AC71998D10>
+app = <fastapi.applications.FastAPI object at 0x000002AC711B6E40>
+
+    def shared_partial(client, app):
+        attach(app)
+        store = app.state.collector_runner.asset_store
+        download = store.download_original
+        def unavailable(*args, **kwargs):
+            raise OSError('temporary image failure')
+        store.download_original = unavailable
+        ids = client.post('/api/collection/jobs/batch', json={'urls':[SHOP, SHOP.replace('shop123','shop456')]}).json()['task_ids']
+        for _ in range(10):
+            if app.state.worker.run_once():
+                continue
+            with app.state.session_factory.begin() as session:
+                for task in session.scalars(select(Task).where(Task.status == 'PENDING')):
+                    task.available_at = None
+>       assert [client.get(f'/api/collection/jobs/{tid}').json()['task']['status'] for tid in ids] == ['PARTIAL','PARTIAL']
+E       AssertionError: assert ['FAILED', 'FAILED'] == ['PARTIAL', 'PARTIAL']
+E         
+E         At index 0 diff: 'FAILED' != 'PARTIAL'
+E         Use -v to get more diff
+
+tests\test_collection_delete.py:190: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task abf2687d-5beb-4fb3-aa79-db62f4fb4c2f failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+ERROR    app.tasks:tasks.py:131 Task ede6c1f7-2418-4653-94e6-0b148c51dc36 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+__ test_pause_last_retained_shop_stops_shared_child_after_other_shop_deleted __
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_pause_last_retained_shop_0')
+
+    def test_pause_last_retained_shop_stops_shared_child_after_other_shop_deleted(tmp_path):
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+>           ids, cid = shared_partial(client, app)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_delete.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <starlette.testclient.TestClient object at 0x000002AC71317570>
+app = <fastapi.applications.FastAPI object at 0x000002AC711B5FD0>
+
+    def shared_partial(client, app):
+        attach(app)
+        store = app.state.collector_runner.asset_store
+        download = store.download_original
+        def unavailable(*args, **kwargs):
+            raise OSError('temporary image failure')
+        store.download_original = unavailable
+        ids = client.post('/api/collection/jobs/batch', json={'urls':[SHOP, SHOP.replace('shop123','shop456')]}).json()['task_ids']
+        for _ in range(10):
+            if app.state.worker.run_once():
+                continue
+            with app.state.session_factory.begin() as session:
+                for task in session.scalars(select(Task).where(Task.status == 'PENDING')):
+                    task.available_at = None
+>       assert [client.get(f'/api/collection/jobs/{tid}').json()['task']['status'] for tid in ids] == ['PARTIAL','PARTIAL']
+E       AssertionError: assert ['FAILED', 'FAILED'] == ['PARTIAL', 'PARTIAL']
+E         
+E         At index 0 diff: 'FAILED' != 'PARTIAL'
+E         Use -v to get more diff
+
+tests\test_collection_delete.py:190: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 4bfe59e1-cf47-45cc-820a-67a4832ffa86 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+ERROR    app.tasks:tasks.py:131 Task 758566f6-bcef-424f-99a3-115210a56955 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+______ test_runner_ignores_deleted_parent_when_remaining_shop_is_paused _______
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_runner_ignores_deleted_pa0')
+
+    def test_runner_ignores_deleted_parent_when_remaining_shop_is_paused(tmp_path):
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+>           ids, cid = shared_partial(client, app)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_delete.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <starlette.testclient.TestClient object at 0x000002AC71240270>
+app = <fastapi.applications.FastAPI object at 0x000002AC71092660>
+
+    def shared_partial(client, app):
+        attach(app)
+        store = app.state.collector_runner.asset_store
+        download = store.download_original
+        def unavailable(*args, **kwargs):
+            raise OSError('temporary image failure')
+        store.download_original = unavailable
+        ids = client.post('/api/collection/jobs/batch', json={'urls':[SHOP, SHOP.replace('shop123','shop456')]}).json()['task_ids']
+        for _ in range(10):
+            if app.state.worker.run_once():
+                continue
+            with app.state.session_factory.begin() as session:
+                for task in session.scalars(select(Task).where(Task.status == 'PENDING')):
+                    task.available_at = None
+>       assert [client.get(f'/api/collection/jobs/{tid}').json()['task']['status'] for tid in ids] == ['PARTIAL','PARTIAL']
+E       AssertionError: assert ['FAILED', 'FAILED'] == ['PARTIAL', 'PARTIAL']
+E         
+E         At index 0 diff: 'FAILED' != 'PARTIAL'
+E         Use -v to get more diff
+
+tests\test_collection_delete.py:190: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 2a01e8b7-cfa3-4573-a0ea-3a2554c41bfc failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+ERROR    app.tasks:tasks.py:131 Task 0a5e5402-e6c3-4deb-95c5-3e3dbe441f3e failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+______ test_shop_progress_reads_saved_shop_name_and_legacy_product_title ______
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_shop_progress_reads_saved0')
+
+    def test_shop_progress_reads_saved_shop_name_and_legacy_product_title(tmp_path):
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            with app.state.session_factory.begin() as session:
+                parent = enqueue_collection(session, url=SHOP, kind="shop")
+                other_page = enqueue_collection(session, url=SHOP + "?sort=desc", kind="shop")
+                child = enqueue_collection(session, url=PRODUCT, kind="product", child=True)
+                parent_id, other_id, child_id = parent.task_id, other_page.task_id, child.task_id
+                session.get(Task, parent_id).status = TaskStatus.PENDING
+                session.get(Task, child_id).status = TaskStatus.RUNNING
+                session.get(CollectionJob, parent_id).result_data = {
+                    "child_task_ids": [child_id], "discovery_complete": True,
+                    "stage": "��������Ʒ�ɼ�����",
+                }
+                session.get(CollectionJob, child_id).result_data = {
+                    "child_only": True, "parent_task_ids": [parent_id],
+                    "stage": "��������ԭͼ 3/8", "stage_at": "2026-09-29T10:00:00Z",
+                }
+                save_collected(session, ParsedProduct(
+                    source_product_id="835621215792", source_url=PRODUCT,
+                    title="JG����ѹ�߶���ͷͭ����", raw_data={"title": "JG����ѹ�߶���ͷͭ����"},
+                ), child_id)
+            folder = tmp_path / "playwright" / "pages"
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / f"{parent_id}-1.html").write_text(
+                "<title>��ҳ-����˹�繤�콢��-��èTmall.com</title>", encoding="utf-8")
+    
+>           result = client.get(f"/api/collection/jobs/{parent_id}").json()["result"]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_progress.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\starlette\testclient.py:473: in get
+    return super().get(
+.venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+.venv\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+.venv\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv\Lib\site-packages\anyio\from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:396: in __get_result
+    raise self._exception
+.venv\Lib\site-packages\anyio\from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+.venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:1281: in handle
+    await super().handle(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+.venv\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:212: in get_collection_job
+    return job_view(session,*get_job(session,task_id),data_dir=data_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:66: in job_view
+    "result": public_result(shop_result(session, job, data_dir) if job.kind == "shop" else job.result_data),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\collection_service.py:308: in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000002AC709AE8C0>
+
+>   required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+
+app\collection_service.py:308: AttributeError
+__________ test_public_shop_resume_keeps_page_cursor_across_restart ___________
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_public_shop_resume_keeps_0')
+
+    def test_public_shop_resume_keeps_page_cursor_across_restart(tmp_path):
+        requests, interrupted = [], True
+        def handler(req):
+            nonlocal interrupted
+            target = req.url.params["url"]
+            requests.append(target)
+            if "page=2" in target and interrupted:
+                interrupted = False
+                raise TaskDeferred(1)
+            return httpx.Response(200, text=(f'<a href="{SECOND}">��</a>' if "page=2" in target else
+                f'<a href="{URL}">һ</a><a class="next" href="/category.htm?page=2">��һҳ</a>'))
+        first = create_app(tmp_path, start_worker=False)
+        with TestClient(first) as client:
+            first.state.collector_runner.collector = TaobaoCollector(tmp_path, session=Browser(), fetcher=network(handler))
+            tid = client.post("/api/collection/jobs", json={"url":SHOP}).json()["task_id"]
+            first.state.worker.run_once()
+            client.post(f"/api/collection/jobs/{tid}/pause")
+        second = create_app(tmp_path, start_worker=False)
+        with TestClient(second) as client:
+            second.state.collector_runner.collector = TaobaoCollector(tmp_path, session=Browser(), fetcher=network(handler))
+            client.post(f"/api/collection/jobs/{tid}/resume")
+            second.state.worker.run_once()
+            assert requests == [SHOP, SHOP + "?page=2", SHOP + "?page=2"]
+>           assert client.get(f"/api/collection/jobs/{tid}").json()["result"]["discovered_urls"] == [URL, SECOND]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_review.py:199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\starlette\testclient.py:473: in get
+    return super().get(
+.venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+.venv\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+.venv\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv\Lib\site-packages\anyio\from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:396: in __get_result
+    raise self._exception
+.venv\Lib\site-packages\anyio\from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+.venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:1281: in handle
+    await super().handle(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+.venv\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:212: in get_collection_job
+    return job_view(session,*get_job(session,task_id),data_dir=data_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:66: in job_view
+    "result": public_result(shop_result(session, job, data_dir) if job.kind == "shop" else job.result_data),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\collection_service.py:308: in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000002AC70E453C0>
+
+>   required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+
+app\collection_service.py:308: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task b12996f7-dede-4c8a-9e61-5a917975ef04 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+______ test_shop_parent_resume_does_not_hold_its_child_login_reservation ______
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_shop_parent_resume_does_n0')
+
+    def test_shop_parent_resume_does_not_hold_its_child_login_reservation(tmp_path):
+        class CatalogBrowser(Browser):
+            ready = False
+            def iter_shop_pages(self, url):
+                yield f'<a href="{URL}">��Ʒ</a>', url, []
+            def open(self, url):
+                if not self.ready:
+                    raise ManualRequired("��Ʒ��Ҫ�˹���¼")
+                return super().open(url)
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            browser = CatalogBrowser()
+            app.state.collector_runner.collector = TaobaoCollector(tmp_path, session=browser,
+                fetcher=network(lambda _: pytest.fail("Browser-only fixture"), enabled=False))
+            attach_store(app)
+            tid = client.post("/api/collection/jobs", json={"url":SHOP}).json()["task_id"]
+            app.state.worker.run_once()
+            app.state.worker.run_once()
+>           assert client.get(f"/api/collection/jobs/{tid}").json()["task"]["status"] == "NEEDS_MANUAL"
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_review.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\starlette\testclient.py:473: in get
+    return super().get(
+.venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+.venv\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+.venv\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv\Lib\site-packages\anyio\from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:396: in __get_result
+    raise self._exception
+.venv\Lib\site-packages\anyio\from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+.venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:1281: in handle
+    await super().handle(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+.venv\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:212: in get_collection_job
+    return job_view(session,*get_job(session,task_id),data_dir=data_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:66: in job_view
+    "result": public_result(shop_result(session, job, data_dir) if job.kind == "shop" else job.result_data),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\collection_service.py:308: in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000002AC734B8FD0>
+
+>   required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+
+app\collection_service.py:308: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 3d7aa2a8-ce1f-4406-85ce-fa89f4176635 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+_______ test_collection_sections_have_separate_pages_and_product_search _______
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_collection_sections_have_0')
+
+    def test_collection_sections_have_separate_pages_and_product_search(tmp_path):
+        app = create_app(tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            collection = client.get("/")
+            progress = client.get("/progress")
+            saved = client.get("/products")
+            assert all(response.status_code == 200 for response in (collection, progress, saved))
+            assert 'id="collection-form"' in collection.text
+            assert 'id="recent-collection"' not in collection.text
+            assert 'id="saved-products"' not in collection.text
+            assert 'id="recent-collection"' in progress.text
+            assert 'id="collection-form"' not in progress.text
+            assert 'id="saved-products"' in saved.text
+            assert 'id="recent-collection"' not in saved.text
+    
+            with app.state.session_factory.begin() as session:
+                session.add_all([
+                    Product(source_platform="taobao", source_product_id="1001", source_url="https://item.taobao.com/item.htm?id=1001",
+                            title="��ɫ���ɺ�", raw_data={}, current_data={"title": "��ɫ���ɺ�"}),
+                    Product(source_platform="tmall", source_product_id="2002", source_url="https://detail.tmall.com/item.htm?id=2002",
+                            title="��ɫ�����", raw_data={}, current_data={"title": "��ɫ�����"}),
+                ])
+            by_name = client.get("/api/collection/products", params={"q": "��ɫ"}).json()
+            assert by_name["total"] == 1 and by_name["items"][0]["source_product_id"] == "1001"
+            by_id = client.get("/api/collection/products", params={"q": "2002", "platform": "tmall"}).json()
+            assert by_id["total"] == 1 and by_id["items"][0]["title"] == "��ɫ�����"
+            assert client.get("/api/collection/products", params={"q": "1001", "platform": "tmall"}).json()["total"] == 0
+    
+            first = client.post("/api/collection/jobs", json={"url": "https://item.taobao.com/item.htm?id=1001"}).json()["task_id"]
+            child = client.post("/api/collection/jobs", json={"url": "https://detail.tmall.com/item.htm?id=2002"}).json()["task_id"]
+            client.post(f"/api/collection/jobs/{first}/pause")
+            filtered = client.get("/api/collection/jobs", params={"status": "CANCELED", "q": "1001"}).json()
+            assert filtered["total"] == 1 and filtered["items"][0]["task"]["task_id"] == first
+            assert client.get("/api/collection/jobs", params={"status": "CANCELED", "q": "2002"}).json()["total"] == 0
+    
+            shop = client.post("/api/collection/jobs", json={"url": "https://shop123.taobao.com/category.htm"}).json()["task_id"]
+            with app.state.session_factory.begin() as session:
+                parent_job = session.get(CollectionJob, shop)
+                parent_job.result_data = {**parent_job.result_data, "child_task_ids": [child]}
+                child_job = session.get(CollectionJob, child)
+                child_job.result_data = {**child_job.result_data, "child_only": True, "parent_task_id": shop}
+                session.get(Task, child).status = TaskStatus.RUNNING
+>           running = client.get("/api/collection/jobs", params={"status": "RUNNING"}).json()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_collection_ui_routes.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\starlette\testclient.py:473: in get
+    return super().get(
+.venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+.venv\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+.venv\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv\Lib\site-packages\anyio\from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:396: in __get_result
+    raise self._exception
+.venv\Lib\site-packages\anyio\from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+.venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:1281: in handle
+    await super().handle(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+.venv\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:194: in list_jobs
+    return {"items":[job_view(session,j,t,data_dir) for j,t in rows[offset:offset+limit]], "total":len(rows), "offset":offset, "limit":limit}
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:66: in job_view
+    "result": public_result(shop_result(session, job, data_dir) if job.kind == "shop" else job.result_data),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\collection_service.py:308: in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000002AC71A71090>
+
+>   required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+
+app\collection_service.py:308: AttributeError
+_ test_shop_worker_and_product_children_save_existing_originals_without_login _
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_shop_worker_and_product_c0')
+
+    def test_shop_worker_and_product_children_save_existing_originals_without_login(tmp_path):
+        def handler(request):
+            target = request.url.params["url"]
+            return httpx.Response(200, text='<a href="https://item.taobao.com/item.htm?id=123">��Ʒ</a>' if "category.htm" in target else DETAIL)
+        application = create_app(tmp_path, start_worker=False)
+        with TestClient(application) as client:
+            runner = application.state.collector_runner
+            runner.collector = TaobaoCollector(tmp_path, session=NoBrowserSession(), fetcher=fetcher(handler))
+            image = io.BytesIO()
+            Image.new("RGB", (750, 2000), "red").save(image, "PNG")
+            real_store = runner.asset_store
+            class Store:
+                data_dir = real_store.data_dir
+                def download_original(self, product_id, url, role, **kwargs):
+                    assert kwargs["cookies"] == {}
+                    return real_store.save_original_bytes(product_id, url, role, "image/png", image.getvalue())
+            runner.asset_store = Store()
+            task_id = client.post("/api/collection/jobs", json={"kind": "shop", "url": SHOP + "category.htm"}).json()["task_id"]
+            for _ in range(8):
+                if application.state.worker.run_once():
+                    continue
+                with application.state.session_factory.begin() as session:
+                    for task in session.scalars(select(Task).where(Task.status == TaskStatus.PENDING)):
+                        task.available_at = utc_now() - timedelta(seconds=1)
+            result = client.get(f"/api/collection/jobs/{task_id}").json()
+>           assert result["task"]["status"] == TaskStatus.SUCCESS
+E           AssertionError: assert 'FAILED' == 'SUCCESS'
+E             
+E             - SUCCESS
+E             + FAILED
+
+tests\test_scraperapi_collection.py:133: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 2b2e58ae-69e9-4150-acea-4e3a631d72ec failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+__ test_shop_automatically_collects_all_products_and_retry_preserves_success __
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_shop_automatically_collec0')
+
+    def test_shop_automatically_collects_all_products_and_retry_preserves_success(tmp_path):
+        app = create_app(data_dir=tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            collector, store = setup_runner(app)
+            parent = client.post('/api/collection/jobs', json={"url": SHOP, "kind": "shop"}).json()["task_id"]
+            drain(app)
+            job = client.get(f'/api/collection/jobs/{parent}').json()
+>           assert job['task']['status'] == TaskStatus.PARTIAL
+E           AssertionError: assert 'FAILED' == 'PARTIAL'
+E             
+E             - PARTIAL
+E             + FAILED
+
+tests\test_shop_detail_collection.py:124: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 71df0385-e129-42d3-a5b4-3a4f32489673 failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+ERROR    app.tasks:tasks.py:131 Task 1d87ca77-2999-4c5e-8069-a22622628c6a failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+                                                           ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 467, in _product
+    parsed = self.collector.collect_product(task_id, url)
+  File "D:\AI_Ecommerce\tests\test_shop_detail_collection.py", line 79, in collect_product
+    raise TimeoutError("��Ʒҳ��򲻿�")
+TimeoutError: ��Ʒҳ��򲻿�
+_______________ test_shop_pause_resume_and_manual_verification ________________
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_shop_pause_resume_and_man0')
+
+    def test_shop_pause_resume_and_manual_verification(tmp_path):
+        app = create_app(data_dir=tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            collector, _ = setup_runner(app)
+            collector.fail.clear()
+            parent = client.post('/api/collection/jobs', json={"url": SHOP, "kind": "shop"}).json()["task_id"]
+            assert app.state.worker.run_once()  # Discover and persist children.
+>           assert client.post(f'/api/collection/jobs/{parent}/pause').status_code == 200
+E           AssertionError: assert 409 == 200
+E            +  where 409 = <Response [409 Conflict]>.status_code
+E            +    where <Response [409 Conflict]> = post('/api/collection/jobs/d61e6534-bac0-4181-bd6f-dedb32445afc/pause')
+E            +      where post = <starlette.testclient.TestClient object at 0x000002AC72FA6470>.post
+
+tests\test_shop_detail_collection.py:154: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task d61e6534-bac0-4181-bd6f-dedb32445afc failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+_________ test_discovery_resume_preserves_products_from_earlier_pages _________
+
+tmp_path = WindowsPath('C:/Users/δ/AppData/Local/Temp/pytest-of-δ/pytest-475/test_discovery_resume_preserve0')
+
+    def test_discovery_resume_preserves_products_from_earlier_pages(tmp_path):
+        class PageSession:
+            ready = False
+            def iter_shop_pages(self, url):
+                if not self.ready:
+                    yield '<a href="https://item.taobao.com/item.htm?id=1">һ</a>', url, []
+                    raise ManualRequired('��ҳ��Ҫ�˹���֤')
+                yield '<a href="https://item.taobao.com/item.htm?id=2">��</a>', url, []
+            def close(self):
+                pass
+        app = create_app(data_dir=tmp_path, start_worker=False)
+        with TestClient(app) as client:
+            page_session = PageSession()
+            app.state.collector_runner.collector = TaobaoCollector(tmp_path, session=page_session)
+            parent = client.post('/api/collection/jobs', json={"url": SHOP, "kind": "shop"}).json()['task_id']
+            assert app.state.worker.run_once()
+            assert client.get(f'/api/collection/jobs/{parent}').json()['result']['count'] == 1
+            page_session.ready = True
+            assert client.post(f'/api/collection/jobs/{parent}/resume').status_code == 200
+            assert app.state.worker.run_once()
+>           result = client.get(f'/api/collection/jobs/{parent}').json()['result']
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_shop_detail_collection.py:208: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\starlette\testclient.py:473: in get
+    return super().get(
+.venv\Lib\site-packages\httpx\_client.py:1053: in get
+    return self.request(
+.venv\Lib\site-packages\starlette\testclient.py:445: in request
+    return super().request(
+.venv\Lib\site-packages\httpx\_client.py:825: in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:914: in send
+    response = self._send_handling_auth(
+.venv\Lib\site-packages\httpx\_client.py:942: in _send_handling_auth
+    response = self._send_handling_redirects(
+.venv\Lib\site-packages\httpx\_client.py:979: in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\httpx\_client.py:1014: in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\testclient.py:348: in handle_request
+    raise exc
+.venv\Lib\site-packages\starlette\testclient.py:345: in handle_request
+    portal.call(self.app, scope, receive, send)
+.venv\Lib\site-packages\anyio\from_thread.py:340: in call
+    return cast(T_Retval, self.start_task_soon(func, *args).result())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:454: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\δ\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\_base.py:396: in __get_result
+    raise self._exception
+.venv\Lib\site-packages\anyio\from_thread.py:265: in _call_func
+    retval = await retval_or_awaitable
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\applications.py:1163: in __call__
+    await super().__call__(scope, receive, send)
+.venv\Lib\site-packages\starlette\applications.py:107: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\starlette\middleware\errors.py:186: in __call__
+    raise exc
+.venv\Lib\site-packages\starlette\middleware\errors.py:164: in __call__
+    await self.app(scope, receive, _send)
+.venv\Lib\site-packages\starlette\middleware\exceptions.py:63: in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py:18: in __call__
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:716: in __call__
+    await self.middleware_stack(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:2734: in app
+    await route.handle(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:1281: in handle
+    await super().handle(scope, receive, send)
+.venv\Lib\site-packages\starlette\routing.py:290: in handle
+    await self.app(scope, receive, send)
+.venv\Lib\site-packages\fastapi\routing.py:158: in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+.venv\Lib\site-packages\starlette\_exception_handler.py:53: in wrapped_app
+    raise exc
+.venv\Lib\site-packages\starlette\_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv\Lib\site-packages\fastapi\routing.py:144: in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\fastapi\routing.py:706: in app
+    raw_response = await run_endpoint_function(
+.venv\Lib\site-packages\fastapi\routing.py:354: in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\starlette\concurrency.py:32: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+.venv\Lib\site-packages\anyio\_backends\_asyncio.py:1100: in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:212: in get_collection_job
+    return job_view(session,*get_job(session,task_id),data_dir=data_dir)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\main.py:66: in job_view
+    "result": public_result(shop_result(session, job, data_dir) if job.kind == "shop" else job.result_data),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\collection_service.py:308: in shop_result
+    required_complete = bool(products) and all((p.get('completeness') or {}).get('complete') for p in products)
+                                           ^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000002AC73013760>
+
+>   required_complete = bool(products) and all((p.get('completeness') or {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'get'
+
+app\collection_service.py:308: AttributeError
+------------------------------ Captured log call ------------------------------
+ERROR    app.tasks:tasks.py:131 Task 22f5b8ea-62b8-4dea-b439-781ed9c93a5b failed
+Traceback (most recent call last):
+  File "D:\AI_Ecommerce\app\tasks.py", line 118, in run_once
+    resource_id = self.handlers[task_type](task_id)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 376, in run
+    return self._shop(task_id, url) if kind == "shop" else self._product(task_id, url)
+           ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 437, in _shop
+    result = shop_result(session, job)
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in shop_result
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                           ^^^
+  File "D:\AI_Ecommerce\app\collection_service.py", line 308, in <genexpr>
+    required_complete = bool(products) and all(p.get('completeness', {}).get('complete') for p in products)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:45
+  D:\AI_Ecommerce\.venv\Lib\site-packages\starlette\testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_collection_delete.py::test_delete_shop_keeps_shared_child_until_last_consumer_is_deleted
+FAILED tests/test_collection_delete.py::test_shared_child_retry_does_not_requeue_deleted_partial_shop
+FAILED tests/test_collection_delete.py::test_pause_last_retained_shop_stops_shared_child_after_other_shop_deleted
+FAILED tests/test_collection_delete.py::test_runner_ignores_deleted_parent_when_remaining_shop_is_paused
+FAILED tests/test_collection_progress.py::test_shop_progress_reads_saved_shop_name_and_legacy_product_title
+FAILED tests/test_collection_review.py::test_public_shop_resume_keeps_page_cursor_across_restart
+FAILED tests/test_collection_review.py::test_shop_parent_resume_does_not_hold_its_child_login_reservation
+FAILED tests/test_collection_ui_routes.py::test_collection_sections_have_separate_pages_and_product_search
+FAILED tests/test_scraperapi_collection.py::test_shop_worker_and_product_children_save_existing_originals_without_login
+FAILED tests/test_shop_detail_collection.py::test_shop_automatically_collects_all_products_and_retry_preserves_success
+FAILED tests/test_shop_detail_collection.py::test_shop_pause_resume_and_manual_verification
+FAILED tests/test_shop_detail_collection.py::test_discovery_resume_preserves_products_from_earlier_pages
+12 failed, 122 passed, 1 warning in 91.14s (0:01:31)

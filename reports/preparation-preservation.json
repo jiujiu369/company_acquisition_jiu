@@ -1,0 +1,21 @@
+{
+  "files_checked": 3621,
+  "changed_files": [],
+  "counts": {
+    "products": 60,
+    "product_assets": 3501,
+    "product_captures": 77,
+    "collection_jobs": 219,
+    "tasks": 234
+  },
+  "expected_counts": {
+    "products": 60,
+    "product_assets": 3501,
+    "product_captures": 77,
+    "collection_jobs": 219,
+    "tasks": 234
+  },
+  "counts_unchanged": true,
+  "integrity": "ok",
+  "session": "This implementation never started a production collection browser or modified its profile."
+}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block page %}progress{% endblock %}
+{% block title %}采集进度 · 商品采集下载{% endblock %}
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">MONITOR / 02</p><h1>采集进度</h1><p>查看采集中的任务、历史结果与每件商品的处理步骤。</p></div><a class="button primary" href="/"><svg class="icon"><use href="#i-plus"/></svg>新建采集</a></header>
+<section class="card list-card"><div class="list-heading"><div><h2>任务列表 <span id="jobs-count" class="heading-count"></span></h2><p class="muted">进行中的任务每 3 秒自动更新；登录或验证后可在这里继续。</p></div><button id="refresh-jobs" class="button" type="button"><svg class="icon"><use href="#i-refresh"/></svg>刷新</button></div>
+  <div class="list-tools"><label class="search-field"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">搜索任务来源或名称</span><input id="job-search" type="search" placeholder="搜索店铺、商品或链接"></label><label class="select-field">状态<select id="job-status"><option value="all">全部状态</option><option value="PENDING">待采集</option><option value="RUNNING">采集中</option><option value="NEEDS_MANUAL">等待人工处理</option><option value="CANCELED">已暂停</option><option value="SUCCESS">已完成</option><option value="PARTIAL">部分失败</option><option value="FAILED">失败</option></select></label></div>
+  <div class="toolbar" aria-label="本页任务操作"><button id="pause-page" class="button" type="button"><svg class="icon"><use href="#i-pause"/></svg>暂停本页</button><button id="resume-page" class="button" type="button"><svg class="icon"><use href="#i-play"/></svg>继续本页</button><button id="retry-page" class="button" type="button"><svg class="icon"><use href="#i-refresh"/></svg>重试失败</button><button id="export-page" class="button" type="button"><svg class="icon"><use href="#i-download"/></svg>导出本页 ZIP</button><button id="delete-page" class="button danger" type="button"><svg class="icon"><use href="#i-trash"/></svg>删除本页</button></div>
+  <div class="toolbar"><button id="export-excel-page" class="button" type="button"><svg class="icon"><use href="#i-download"/></svg>逐商品导出本页 Excel</button><span class="muted">多件商品打包为 ZIP，每件商品独立表格。</span></div>
+  <p id="jobs-feedback" class="feedback" role="status" aria-live="polite"></p><div id="recent-collection" class="job-list" aria-live="polite"><div class="list-state">正在读取任务…</div></div>
+  <nav class="pagination" aria-label="任务历史分页"><button id="prev-jobs" class="button" type="button">上一页</button><span id="job-page"></span><button id="next-jobs" class="button" type="button">下一页</button></nav>
+</section>
+{% include 'product_dialog.html' %}
+{% endblock %}

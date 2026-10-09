@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}商品采集下载{% endblock %}</title>
+  {% set asset_versions = asset_versions|default({}) %}
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/collection.css') }}?v={{ asset_versions.get('css/collection.css', 'explorer-picker-20261005-2') }}">
+  <script defer src="{{ url_for('static', path='/js/preparation.js') }}?v={{ asset_versions.get('js/preparation.js', 'explorer-picker-20261005-2') }}"></script>
+  <script defer src="{{ url_for('static', path='/js/collection.js') }}?v={{ asset_versions.get('js/collection.js', 'explorer-picker-20261005-2') }}"></script>
+</head>
+<body data-page="{% block page %}collection{% endblock %}">
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="i-package" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v4h4M4 13a8 8 0 0 0 14.8 4M20 20v-4h-4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 4h3v16H7zM14 4h3v16h-3z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m7 4 14 8-14 8V4Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7M14 10v7"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3h7v7M10 14 21 3M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></symbol>
+  </svg>
+  <header class="app-header"><div class="header-inner">
+    <a class="brand" href="/" aria-label="商品采集下载首页"><span class="brand-mark"><svg class="icon"><use href="#i-download"/></svg></span><span>商品采集下载<small>淘宝 · 天猫</small></span></a>
+    <nav class="main-nav" aria-label="主导航">
+      <a href="/" {% if request.url.path in ('/', '/collection') %}aria-current="page"{% endif %}><svg class="icon"><use href="#i-plus"/></svg>商品采集</a>
+      <a href="/progress" {% if request.url.path == '/progress' %}aria-current="page"{% endif %}><svg class="icon"><use href="#i-list"/></svg>采集进度</a>
+      <a href="/products" {% if request.url.path == '/products' %}aria-current="page"{% endif %}><svg class="icon"><use href="#i-package"/></svg>已保存商品</a>
+    </nav>
+    <span id="system-status" class="service-status" role="status">检查服务中…</span>
+  </div></header>
+  <main class="main-shell">{% block content %}{% endblock %}</main>
+</body>
+</html>

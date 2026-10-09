@@ -1,0 +1,27 @@
+{
+  "status": "SAVED",
+  "path": "D:\\上架专用\\JG\\优化导出_20261008\\632745637833_国标A级 JG船用单压厚件铜接头 JG16-6-8-10 铜鼻子 接线端子\\版本_20261008T033304Z_51a74e90",
+  "zip": "D:\\上架专用\\JG\\优化导出_20261008\\JG_完整资料.zip",
+  "old_bytes": 203086,
+  "new_bytes": 31934,
+  "reduction_percent": 84.3,
+  "sku_count": 24,
+  "media_count": 39,
+  "html_asset_references_checked": 72,
+  "csv_skus_checked": 24,
+  "verification": {
+    "status": "SAVED",
+    "path": "D:\\上架专用\\JG\\优化导出_20261008\\632745637833_国标A级 JG船用单压厚件铜接头 JG16-6-8-10 铜鼻子 接线端子\\版本_20261008T033304Z_51a74e90",
+    "errors": [],
+    "verified_at": "2026-10-08T03:33:05.508334+00:00"
+  },
+  "test_suite": {
+    "passed": 174,
+    "failed": 0,
+    "warnings": 1,
+    "duration_seconds": 95.91,
+    "warning": "Existing Starlette TestClient AnyIO deprecation warning"
+  },
+  "code_review": "Passed after fixing explicit field states, confirmation flags, provenance download, and metadata-only CSV.",
+  "running_service_requires_restart": true
+}

@@ -1,0 +1,1 @@
+{"ui": "passed", "products": 4, "original_bytes": "exact", "page_errors": [], "screenshot": "D:\\AI_Ecommerce\\artifacts\\collection-only-ui.png"}

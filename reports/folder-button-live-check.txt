@@ -1,0 +1,1 @@
+{"live_page": "passed", "button_request": ["POST"], "cancel_feedback": "passed", "new_styles": {"height": 45.25, "row": "flex"}, "page_errors": [], "screenshot": "D:\\AI_Ecommerce\\artifacts\\folder-button-fixed.png"}

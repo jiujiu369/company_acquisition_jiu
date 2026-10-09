@@ -1,0 +1,122 @@
+[
+  {
+    "path": "app/assets.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/collection_export.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/collection_service.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/main.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/preparation.py",
+    "change": "added"
+  },
+  {
+    "path": "app/preparation_routes.py",
+    "change": "added"
+  },
+  {
+    "path": "app/preparation_service.py",
+    "change": "added"
+  },
+  {
+    "path": "app/products.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/product_package.py",
+    "change": "added"
+  },
+  {
+    "path": "app/product_service.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/taobao/parser.py",
+    "change": "modified"
+  },
+  {
+    "path": "app/taobao/seller_read.py",
+    "change": "added"
+  },
+  {
+    "path": "templates/base.html",
+    "change": "modified"
+  },
+  {
+    "path": "templates/collection.html",
+    "change": "modified"
+  },
+  {
+    "path": "static/css/collection.css",
+    "change": "modified"
+  },
+  {
+    "path": "static/js/collection.js",
+    "change": "modified"
+  },
+  {
+    "path": "static/js/preparation.js",
+    "change": "added"
+  },
+  {
+    "path": "scripts/check_preparation_preservation.py",
+    "change": "added"
+  },
+  {
+    "path": "scripts/collection_ui_acceptance.py",
+    "change": "modified"
+  },
+  {
+    "path": "scripts/select_folder.ps1",
+    "change": "added"
+  },
+  {
+    "path": "tests/test_collection_redesign_ui.py",
+    "change": "modified"
+  },
+  {
+    "path": "tests/test_preparation_batches.py",
+    "change": "added"
+  },
+  {
+    "path": "tests/test_preparation_data.py",
+    "change": "added"
+  },
+  {
+    "path": "tests/test_preparation_parser.py",
+    "change": "added"
+  },
+  {
+    "path": "tests/test_preparation_ui.py",
+    "change": "added"
+  },
+  {
+    "path": "tests/test_product_package.py",
+    "change": "added"
+  },
+  {
+    "path": "tests/test_seller_read.py",
+    "change": "added"
+  },
+  {
+    "path": "docs/saved-product-record.example.json",
+    "change": "added"
+  },
+  {
+    "path": "docs/superpowers/plans/2026-10-05-product-preparation.md",
+    "change": "modified"
+  },
+  {
+    "path": "README.md",
+    "change": "modified"
+  }
+]

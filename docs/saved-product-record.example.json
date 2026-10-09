@@ -1,0 +1,15 @@
+{
+  "source_product_id": "替换为对应来源商品ID",
+  "record_kind": "saved_product",
+  "source_url": "https://myseller.taobao.com/替换为原商品已保存资料链接",
+  "observed_at": "2026-10-05T00:00:00+08:00",
+  "fields": {
+    "stock": {"value": null, "status": "not_obtained", "reason": "仅为本地格式示例，未包含商品实际库存"},
+    "price": {"value": null, "status": "not_obtained", "reason": "请从原商品已保存设置读取实际一口价"},
+    "currency": {"value": null, "status": "not_obtained"},
+    "stock_unit": {"value": null, "status": "not_obtained"},
+    "listing_history": {"value": null, "status": "not_obtained"}
+  },
+  "attributes": {},
+  "skus": []
+}

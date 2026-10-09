@@ -1,0 +1,6 @@
+stage: winforms
+stage: compile
+stage: owner
+stage: show
+stage: activate
+stage: dialog

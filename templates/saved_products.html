@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block page %}products{% endblock %}
+{% block title %}已保存商品 · 商品采集下载{% endblock %}
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">LIBRARY / 03</p><h1>已保存商品</h1><p>集中查看已采集资料与原始图片，按需导出。</p></div><a class="button primary" href="/"><svg class="icon"><use href="#i-plus"/></svg>新建采集</a></header>
+<section class="card list-card"><div class="list-heading"><div><h2>商品资料 <span id="products-count" class="heading-count"></span></h2><p class="muted">结果保存在本地，可直接查看和下载原图。</p></div><button id="refresh-products" class="button" type="button"><svg class="icon"><use href="#i-refresh"/></svg>刷新</button></div>
+  <div class="list-tools"><label class="search-field"><svg class="icon"><use href="#i-search"/></svg><span class="sr-only">搜索商品名称或 ID</span><input id="product-search" type="search" placeholder="搜索商品名称或商品 ID"></label><label class="select-field">来源<select id="product-platform"><option value="all">全部平台</option><option value="taobao">淘宝</option><option value="tmall">天猫</option></select></label></div>
+  <p id="products-feedback" class="feedback" role="status" aria-live="polite"></p><div id="saved-products" class="saved-list" aria-live="polite"><div class="list-state">正在读取商品…</div></div>
+  <nav class="pagination" aria-label="商品分页"><button id="prev-products" class="button" type="button">上一页</button><span id="product-page"></span><button id="next-products" class="button" type="button">下一页</button></nav>
+</section>
+{% include 'product_dialog.html' %}
+{% endblock %}
